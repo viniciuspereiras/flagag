@@ -1,0 +1,28 @@
+#!/bin/bash
+echo '  __ _                          ()__              '
+echo ' / _| | __ _  __ _  __ _  __ _  ||**Z__           '
+echo '| |_| |/ _` |/ _` |/ _` |/ _` | ||**|**=Z____     '
+echo '|  _| | (_| | (_| | (_| | (_| | ||==|**=|====|    '
+echo '|_| |_|\__,_|\__, |\__,_|\__, | ||""|===|====|    '
+echo '             |___/       |___/  ||  `"""|====|    '
+echo '                                ||      `""""`    '
+echo 'Usage: ./flagag wordlist "status codes" flag url'
+wordlist=$1
+codes=$2
+flag=$3
+url=$4
+while read linha 
+do 
+status=$(curl -s -o /dev/null -I -w "%{http_code}" $url/$linha)
+if [[ $status -eq "$codes" ]] 
+then
+	echo "[...] Found! (Status: $status) -> $url/$linha"
+    resultflag=$(curl -s $url/$linha | grep -i $flag)
+    
+    if [[ -n $resultflag ]]
+    then 
+    	echo "     [...] Flag Found in $linha --> $resultflag" 
+    	echo ""
+	fi
+fi
+done < /usr/share/seclists/Discovery/Web-Content/$wordlist
